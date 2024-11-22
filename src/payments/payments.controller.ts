@@ -1,14 +1,21 @@
-import { Body, Controller, Get, Post, All } from '@nestjs/common';
+import { Body, Controller, Get, Post, All, Req, Res } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { createPaymentSessionDto } from './dto';
+import { PaymentSessionDto } from './dto';
+import { Request, Response } from 'express';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('session/create')
-  createPaymentSession(@Body() createPaymentSession: createPaymentSessionDto) {
-    return createPaymentSession;
+  @MessagePattern('payments.session.create')
+  createPaymentSession(@Body() paymentSessionDto: PaymentSessionDto) {
+    console.log(
+      '🚀 ~ PaymentsController ~ createPaymentSession ~ paymentSessionDto:',
+      paymentSessionDto,
+    );
+    return this.paymentsService.createPaymentSession(paymentSessionDto);
   }
 
   @Get('success')
@@ -28,10 +35,7 @@ export class PaymentsController {
   }
 
   @All('webhook')
-  paymentWeebhook() {
-    return {
-      ok: false,
-      message: 'Payment cancel',
-    };
+  async paymentWeebhook(@Req() req: Request, @Res() res: Response) {
+    return await this.paymentsService.paymentWebhook(req, res);
   }
 }

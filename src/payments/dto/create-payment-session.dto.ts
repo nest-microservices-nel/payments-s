@@ -1,6 +1,36 @@
-import { IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNumber,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
-export class createPaymentSessionDto {
+export class PaymentSessionDto {
   @IsString()
-  data: string;
+  orderId: string;
+
+  @IsString()
+  currency: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => PaymentSessionItemDto)
+  items: Array<PaymentSessionItemDto>;
+}
+
+export class PaymentSessionItemDto {
+  @IsNumber()
+  @IsPositive()
+  quantity: number;
+
+  @IsNumber()
+  @IsPositive()
+  price: number;
+
+  @IsString()
+  name: string;
 }
