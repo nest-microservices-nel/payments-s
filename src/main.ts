@@ -7,8 +7,8 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const logger = new Logger('Payments-ms');
 
+  //CONFIGURACION HPPT DEL SERVER NEST
   const app = await NestFactory.create(AppModule, { rawBody: true });
-  await app.listen(envs.port);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,6 +17,9 @@ async function bootstrap() {
     }),
   );
 
+  await app.listen(envs.port);
+
+  //CONFIGURACION MICROSERVICES DEL SERVER NEST JUNTO CON HTTP SERVER
   app.connectMicroservice<MicroserviceOptions>(
     {
       transport: Transport.NATS,
