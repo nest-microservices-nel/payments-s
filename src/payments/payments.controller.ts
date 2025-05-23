@@ -26,7 +26,7 @@ export class PaymentsController {
     };
   }
 
-  @Get('cancel')
+  @Get('cancele')
   paymentCancel() {
     return {
       ok: false,
