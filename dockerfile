@@ -13,7 +13,7 @@ COPY . .
 # deja de "funcionar" o pasa a un segundo plano. Puede ser simplemente documentacion y/o sistema de comunicacion interna.
 # EXPOSE 8888: puedo incluirlo o no y sigue funcionando.
 
-EXPOSE 3003
+EXPOSE 3000
 
 # se pueden definir variables de entorno en el dockerfile y tambien en el docker-compose.yml 
 # ENV PORT=3000
