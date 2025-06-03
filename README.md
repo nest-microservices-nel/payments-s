@@ -1,73 +1,183 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 💳 Payments Microservice - NestJS
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> ⚙️ **This service runs in two modes:**
+> - 🧩 **Microservice via NATS** for internal communication
+> - 🔒 **HTTPS server** to receive **Stripe Webhooks**
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This is a microservice for handling payments using **Stripe**, built with [NestJS](https://nestjs.com/).  
+It is part of a microservices architecture and manages the creation of Stripe sessions, payment confirmations, and webhook validation.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📚 Table of Contents
 
-## Installation
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [API Endpoints](#-api-endpoints)
+- [Running with Docker](#-running-with-docker)
+- [Additional Notes](#-additional-notes)
+- [License](#-license)
 
-```bash
-$ npm install
+---
+
+## 🚀 Features
+
+- Stripe integration for handling payments
+- Create payment sessions with success and cancel URLs
+- Secure webhook verification using Stripe’s signing secret
+- Microservice communication using NATS
+- HTTPS support for Stripe webhook verification
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Description                                |
+|------------|--------------------------------------------|
+| NestJS     | Backend framework for Node.js              |
+| TypeScript | Main language of the project               |
+| Stripe     | Payment processing                         |
+| NATS       | Event-based microservice communication     |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── payments/            # Payments module (controllers, services, webhooks)
+├── config/              # Global config and environment validation
+├── main.ts              # Entry point of the application
 ```
 
-## Running the app
+---
+
+## 📦 Installation
+
+To run the payments microservice locally:
+
+1. **Clone the repository**
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/nest-microservices-nel/payments-s.git
+cd payments-s
 ```
 
-## Test
+2. **Install dependencies**
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Support
+3. **Create the .env file**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```env
+PORT=3000
+STRIPE_SECRET=your_stripe_secret
+STRIPE_SUCCESS_URL=http://localhost:3003/payments/success
+STRIPE_CANCEL_URL=http://localhost:3003/payments/cancel
+STRIPE_SIGNING_WEBHOOK_ENDPOINT=your_webhook_signing_secret
+NATS_SERVERS=nats://nats-server:4222
+```
 
-## Stay in touch
+4. **Run the service**
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run start:dev
+```
 
-## License
+---
 
-Nest is [MIT licensed](LICENSE).
+## 🔐 Environment Variables
+
+| Variable                         | Description                                 |
+|----------------------------------|---------------------------------------------|
+| `PORT`                           | Port for the service                        |
+| `STRIPE_SECRET`                  | Stripe private secret key                   |
+| `STRIPE_SUCCESS_URL`             | URL redirected after successful payment     |
+| `STRIPE_CANCEL_URL`              | URL redirected after canceled payment       |
+| `STRIPE_SIGNING_WEBHOOK_ENDPOINT` | Stripe webhook signing secret               |
+| `NATS_SERVERS`                   | NATS connection URL                         |
+
+---
+
+## 📬 API Endpoints
+
+### 💳 Create Checkout Session
+
+**POST** `/payments/create`
+
+- Body: `{ amount: number, currency: string, metadata?: any }`
+- Returns a Stripe checkout session URL.
+
+### 🔁 Webhook Listener
+
+**POST** `/payments/webhook`
+
+- Listens for Stripe events (e.g., `checkout.session.completed`).
+- Validates request using `STRIPE_SIGNING_WEBHOOK_ENDPOINT`.
+- Must be exposed as an **HTTPS endpoint** for Stripe to deliver events.
+
+### ✅ Success URL
+
+**GET** `/payments/success`
+
+- Placeholder route after successful Stripe payment.
+
+### ❌ Cancel URL
+
+**GET** `/payments/cancel`
+
+- Placeholder route if the payment is canceled.
+
+---
+
+## 🐳 Running with Docker
+
+### Step 1: Build the Docker image
+
+```bash
+docker build -t payments-s .
+```
+
+### Step 2: Run the container
+
+```bash
+docker run -p 3000:3000 \
+  -e PORT=3000 \
+  -e STRIPE_SECRET=your_stripe_secret \
+  -e STRIPE_SUCCESS_URL=http://localhost:3003/payments/success \
+  -e STRIPE_CANCEL_URL=http://localhost:3003/payments/cancel \
+  -e STRIPE_SIGNING_WEBHOOK_ENDPOINT=your_webhook_signing_secret \
+  -e NATS_SERVERS=nats://nats-server:4222 \
+  payments-s
+```
+
+---
+
+## 📌 Additional Notes
+
+- Requires a valid Stripe account and API keys.
+- The webhook listener (`/payments/webhook`) must be accessible over **HTTPS**.
+- In development, you can use [ngrok](https://ngrok.com/) to expose local HTTPS URLs for Stripe.
+- This microservice is intended to work as part of a larger architecture using NATS for internal communication.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 🤝 Author
+
+**Nelson G.**  
+[GitHub](https://github.com/nelsin-06)
+
+[LinkedIn](https://www.linkedin.com/in/nelson-gallego-tec-dev)
+
+---
