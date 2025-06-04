@@ -47,6 +47,7 @@ export class PaymentsService {
 
   async paymentWebhook(req: Request, res: Response) {
     const signature = req.headers['stripe-signature'];
+    console.log("🚀 ~ PaymentsService ~ paymentWebhook ~ signature:", signature)
     const endpointSecret = envs.stripeSingingWebhook;
     let event: Stripe.Event;
     try {
